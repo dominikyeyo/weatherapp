@@ -26,6 +26,8 @@ fun SearchScreen(
     uiState: SearchUiState,
     onSearch: (String) -> Unit
 ) {
+    val isLoading = uiState is SearchUiState.Loading
+
     var query by remember { mutableStateOf("") }
 
     Column(
@@ -45,6 +47,7 @@ fun SearchScreen(
 
         Button(
             onClick = { onSearch(query) },
+            enabled = query.isNotBlank() && !isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Buscar ciudad")
@@ -67,9 +70,16 @@ fun SearchScreen(
             }
 
             is SearchUiState.Success -> {
-                LazyColumn {
-                    items(uiState.results) { location ->
-                        LocationItem(location)
+                if (uiState.results.isEmpty()) {
+                    Text(
+                        text = "No se encontraron resultados",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+                    LazyColumn {
+                        items(uiState.results) { location ->
+                            LocationItem(location)
+                        }
                     }
                 }
             }

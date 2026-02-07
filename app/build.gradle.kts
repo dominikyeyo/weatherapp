@@ -100,7 +100,8 @@ dependencies {
     // Tests
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
-
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 hilt {

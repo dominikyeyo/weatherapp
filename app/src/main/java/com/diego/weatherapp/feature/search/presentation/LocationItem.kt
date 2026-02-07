@@ -1,9 +1,7 @@
 package com.diego.weatherapp.feature.search.presentation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,10 +12,14 @@ import androidx.compose.ui.unit.dp
 import com.diego.weatherapp.domain.model.Location
 
 @Composable
-fun LocationItem(location: Location) {
+fun LocationItem(
+    location: Location,
+    onClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 8.dp)
     ) {
         Text(

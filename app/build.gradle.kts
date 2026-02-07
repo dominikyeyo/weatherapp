@@ -95,6 +95,8 @@ dependencies {
     // Images
     implementation(libs.coil.compose)
 
+    implementation(libs.androidx.core.splashscreen)
+
     // Tests
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)

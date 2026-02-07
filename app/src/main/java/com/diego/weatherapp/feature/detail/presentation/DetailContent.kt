@@ -1,6 +1,5 @@
 package com.diego.weatherapp.feature.detail.presentation
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -43,15 +41,12 @@ fun DetailContent(
     ) {
         when (uiState) {
             DetailUiState.Idle -> Unit
-
             DetailUiState.Loading -> LoadingState()
-
             is DetailUiState.Error -> ErrorState(
                 message = uiState.message,
                 query = query,
                 onRetry = onRetry
             )
-
             is DetailUiState.Success -> SuccessState(forecast = uiState.forecast)
         }
     }
@@ -92,32 +87,19 @@ private fun ErrorState(
 
 @Composable
 private fun SuccessState(forecast: Forecast) {
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    if (isLandscape) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            CurrentHeader(forecast)
-            ForecastDaysColumn(forecast.days)
+    // LazyColumn permite scroll tanto en portrait como en landscape (cumple requisito de rotación)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item { CurrentHeader(forecast) }
+        item { Text("Pronóstico (3 días)", style = MaterialTheme.typography.titleSmall) }
+        items(forecast.days) { day ->
+            ForecastDayCard(day)
         }
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item { CurrentHeader(forecast) }
-            item { Text("Pronóstico (3 días)", style = MaterialTheme.typography.titleSmall) }
-            items(forecast.days) { day ->
-                ForecastDayCard(day)
-            }
-            item { Spacer(modifier = Modifier.height(4.dp)) }
-        }
+        item { Spacer(modifier = Modifier.height(4.dp)) }
     }
 }
 
@@ -172,14 +154,6 @@ private fun CurrentHeader(forecast: Forecast) {
 }
 
 @Composable
-private fun ForecastDaysColumn(days: List<ForecastDay>) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Pronóstico (3 días)", style = MaterialTheme.typography.titleSmall)
-        days.forEach { day -> ForecastDayCard(day) }
-    }
-}
-
-@Composable
 private fun ForecastDayCard(day: ForecastDay) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -195,7 +169,9 @@ private fun ForecastDayCard(day: ForecastDay) {
             AsyncImage(
                 model = day.conditionIconUrl,
                 contentDescription = day.conditionText,
-                modifier = Modifier.height(44.dp).padding(vertical = 2.dp)
+                modifier = Modifier
+                    .height(44.dp)
+                    .padding(vertical = 2.dp)
             )
 
             Column(modifier = Modifier.weight(1f)) {

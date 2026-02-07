@@ -18,12 +18,26 @@ class DetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Idle)
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
-    fun loadForecast(query: String) {
+    private var lastQuery: String? = null
 
-        if (_uiState.value is DetailUiState.Loading) return
+    fun loadForecast(query: String, force: Boolean = false) {
+        val currentState = _uiState.value
+
+        val alreadyLoadedSameQuery =
+            query == lastQuery && currentState is DetailUiState.Success
+
+        if (!force && alreadyLoadedSameQuery) return
+
+        val isLoadingSameQuery =
+            query == lastQuery && currentState is DetailUiState.Loading
+
+        if (!force && isLoadingSameQuery) return
+
+        lastQuery = query
 
         viewModelScope.launch {
             _uiState.value = DetailUiState.Loading
+
             runCatching {
                 getForecastUseCase(query, days = 3)
             }.onSuccess { forecast ->

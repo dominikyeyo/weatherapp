@@ -52,7 +52,7 @@ fun DetailScreen(
             paddingValues = padding,
             query = decodedQuery,
             uiState = uiState,
-            onRetry = { viewModel.loadForecast(decodedQuery) }
+            onRetry = { viewModel.loadForecast(decodedQuery, force = true) }
         )
     }
 }

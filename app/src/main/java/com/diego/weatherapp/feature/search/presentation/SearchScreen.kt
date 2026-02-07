@@ -75,7 +75,7 @@ fun SearchScreen(
                             LocationItem(
                                 location = location,
                                 onClick = {
-                                    onNavigateToDetail(location.name)
+                                    onNavigateToDetail("${location.lat},${location.lon}")
                                 }
                             )
                         }

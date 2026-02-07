@@ -28,7 +28,10 @@ fun SearchScreen(
 
         OutlinedTextField(
             value = query,
-            onValueChange = { query = it },
+            onValueChange = {
+                query = it
+                viewModel.onQueryChanged(it)
+            },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Ciudad") },
             singleLine = true
@@ -36,23 +39,16 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = { viewModel.search(query) },
-            enabled = query.isNotBlank() && !isLoading,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Buscar ciudad")
+        if (isLoading) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.height(12.dp))
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         when (uiState) {
 
             is SearchUiState.Idle -> Unit
 
-            is SearchUiState.Loading -> {
-                CircularProgressIndicator()
-            }
+            is SearchUiState.Loading -> Unit
 
             is SearchUiState.Error -> {
                 Text(
